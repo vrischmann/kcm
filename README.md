@@ -281,4 +281,5 @@ $ kcm logs --follow --zk
 
 * `remove` command
 * `complete` command and completion scripts for fish (and maybe bash/zsh if I care to do it)
+* wrapper command to call the Kafka scripts like `kafka-topics.sh` without having to provide the correct zookeeper address.
 * ??
