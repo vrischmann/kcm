@@ -276,3 +276,8 @@ $ kcm logs --follow --zk
 2019-10-14 00:20:58,610 [myid:] - INFO  [main:ContainerManager@64] - Using checkIntervalMs=60000 maxPerMinute=10000
 2019-10-14 00:20:59,143 [myid:] - INFO  [SyncThread:0:FileTxnLog@216] - Creating new log file: log.1
 ```
+
+## TODO
+
+* `remove` command
+* ??
