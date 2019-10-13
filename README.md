@@ -216,7 +216,66 @@ $ kcm stop --zk
 
 Tail the logs for a cluster if a name is provided or all them.
 
-TODO
+Tail the logs for the cluster `prod`:
+
+```
+$ kcm logs prod
+2019-10-14 00:20:58,766 - INFO  [main:Log4jControllerRegistration$@31] - Registered kafka:type=kafka.Log4jController MBean
+2019-10-14 00:20:59,099 - INFO  [main:LoggingSignalHandler@72] - Registered signal handlers for TERM, INT, HUP
+2019-10-14 00:20:59,100 - INFO  [main:Logging@66] - starting
+2019-10-14 00:20:59,101 - INFO  [main:Logging@66] - Connecting to zookeeper on 127.0.0.1:2181/prod
+...
+```
+
+Follow the logs for the cluster `prod`:
+
+```
+$ kcm logs --follow prod
+...
+2019-10-14 00:21:00,377 - INFO  [controller-event-thread:Logging@66] - [Controller id=1] Starting preferred replica leader election for partitions
+2019-10-14 00:21:00,388 - INFO  [controller-event-thread:Logging@66] - [Controller id=1] Starting the controller scheduler
+2019-10-14 00:21:05,390 - INFO  [controller-event-thread:Logging@66] - [Controller id=1] Processing automatic preferred replica leader election
+```
+
+Follow the logs for all clusters:
+
+```
+$ kcm logs --follow
+==> /home/vincent/.kcm/prod/broker1/kafka.log <==
+...
+2019-10-14 00:21:00,377 - INFO  [controller-event-thread:Logging@66] - [Controller id=1] Starting preferred replica leader election for partitions
+2019-10-14 00:21:00,388 - INFO  [controller-event-thread:Logging@66] - [Controller id=1] Starting the controller scheduler
+2019-10-14 00:21:05,390 - INFO  [controller-event-thread:Logging@66] - [Controller id=1] Processing automatic preferred replica leader election
+
+==> /home/vincent/.kcm/staging/broker1/kafka.log <==
+...
+2019-10-14 00:25:35,346 - INFO  [main:Logging@66] - [KafkaServer id=1] started
+2019-10-14 00:25:35,360 - INFO  [controller-event-thread:Logging@66] - [Controller id=1] Starting the controller scheduler
+2019-10-14 00:25:40,361 - INFO  [controller-event-thread:Logging@66] - [Controller id=1] Processing automatic preferred replica leader election
+```
+
+Finally, you can also add the Zookeeper logs:
+
+```
+$ kcm logs --follow --zk
+==> /home/vincent/.kcm/prod/broker1/kafka.log <==
+...
+2019-10-14 00:21:00,388 - INFO  [controller-event-thread:Logging@66] - [Controller id=1] Starting the controller scheduler
+2019-10-14 00:21:05,390 - INFO  [controller-event-thread:Logging@66] - [Controller id=1] Processing automatic preferred replica leader election
+2019-10-14 00:26:05,394 - INFO  [controller-event-thread:Logging@66] - [Controller id=1] Processing automatic preferred replica leader election
+
+==> /home/vincent/.kcm/staging/broker1/kafka.log <==
+...
+2019-10-14 00:25:35,346 - INFO  [main:Logging@66] - [KafkaServer id=1] started
+2019-10-14 00:25:35,360 - INFO  [controller-event-thread:Logging@66] - [Controller id=1] Starting the controller scheduler
+2019-10-14 00:25:40,361 - INFO  [controller-event-thread:Logging@66] - [Controller id=1] Processing automatic preferred replica leader election
+
+==> /home/vincent/.kcm/zookeeper.log <==
+...
+2019-10-14 00:20:58,599 [myid:] - INFO  [main:FileTxnSnapLog@372] - Snapshotting: 0x0 to /home/vincent/.kcm/zkdata/version-2/snapshot.0
+2019-10-14 00:20:58,610 [myid:] - INFO  [main:ContainerManager@64] - Using checkIntervalMs=60000 maxPerMinute=10000
+2019-10-14 00:20:59,143 [myid:] - INFO  [SyncThread:0:FileTxnLog@216] - Creating new log file: log.1
+```
 
 ### Version
 
