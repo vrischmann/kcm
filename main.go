@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	gVersion string
-	gCommit  string
+	gVersion string = "unknown"
+	gCommit  string = "unknown"
 
 	dataDir  string
 	cacheDir string
@@ -426,15 +426,7 @@ The list can be filtered using the "pattern" argument which is a regex.`,
 		Usage:     "version",
 		ShortHelp: "print the version information (necessary to report bugs)",
 		Exec: func([]string) error {
-			version := gVersion
-			if version == "" {
-				version = "unknown"
-			}
-			commit := gCommit
-			if commit == "" {
-				commit = "unknown"
-			}
-			log.Printf("kcm version %s, commit %s", version, commit)
+			log.Printf("kcm version %s, commit %s", gVersion, gCommit)
 			return nil
 		},
 	}
