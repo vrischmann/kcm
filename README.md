@@ -280,4 +280,5 @@ $ kcm logs --follow --zk
 ## TODO
 
 * `remove` command
+* `complete` command and completion scripts for fish (and maybe bash/zsh if I care to do it)
 * ??
