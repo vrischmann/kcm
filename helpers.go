@@ -294,11 +294,13 @@ func tailFiles(follow bool, files ...string) error {
 		}
 	}
 
+	var cmd *exec.Cmd
 	if follow {
-		args = append([]string{"-f"}, args...)
+		cmd = exec.Command("tail", append([]string{"-f"}, args...)...)
+	} else {
+		cmd = exec.Command("cat", args...)
 	}
 
-	cmd := exec.Command("tail", args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
