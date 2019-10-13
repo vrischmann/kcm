@@ -24,7 +24,7 @@ Binaries are built for Linux and macOS.
 
 ### Procedure
 
-You can simply run `go build` to have a ready to use binary.
+You can simply run `go build` to have a ready to use binary, or use the `build.fish` script so `kcm version` works correctly.
 
 ## Usage
 
@@ -98,7 +98,7 @@ Cluster #3 "oldprod"
 
 The name you chose must be unique. All Kafka versions available from the [Kafka website](http://kafka.apache.org/) should work but I haven't tested everything.
 
-### List 
+### List
 
 List all existing clusters and their brokers:
 
