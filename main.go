@@ -7,7 +7,9 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 	"text/tabwriter"
 	"time"
 
@@ -321,6 +323,70 @@ func runLogs(name ClusterName) error {
 	return tailFiles(*logsFollow, files...)
 }
 
+func runScript(args []string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	name := ClusterName(args[0])
+	args = args[1:]
+
+	cluster, err := getCluster(ctx, name)
+	if err != nil {
+		return err
+	}
+	if cluster == nil {
+		return fmt.Errorf("cluster %q doesn't exist", name)
+	}
+
+	// The script is not in the path, it needs to be absolute.
+	kafkaPath := makeKafkaExtractedPath(cluster.Version)
+
+	// We allow a user to use either the full name with the .sh extension like kafka-topics.sh
+	// or the name without the extension.
+	originalCommand := filepath.Join(kafkaPath, "bin", args[0])
+	scriptName := args[0]
+	if !strings.HasSuffix(scriptName, ".sh") {
+		scriptName += ".sh"
+		originalCommand += ".sh"
+	}
+
+	// Kafka has scripts with two main ways of providing the connection parameters for the cluster:
+	// * the zookeeper node address and prefix
+	// * a list of broker addresses
+	//
+	// We keep a mapping of what script needs what so we know how to call a particular script.
+
+	switch requirement := kafkaScriptsRequirements[scriptName]; requirement.connect {
+	case kafkaScriptZookeeper:
+		// Prepend the list of arguments with the zookeeper connection string.
+		zkAddr := *globalZkAddr + "/" + string(name)
+		args = append([]string{requirement.FlagName(), zkAddr}, args[1:]...)
+
+	case kafkaScriptKafka:
+		// Prepend the list of arguments with the bootstrap servers string.
+		var builder strings.Builder
+		for i, broker := range cluster.Brokers {
+			if i+1 < len(cluster.Brokers) {
+				builder.WriteString(",")
+			}
+			builder.WriteString(broker.Addr.String())
+		}
+
+		args = append([]string{requirement.FlagName(), builder.String()}, args[1:]...)
+
+	default:
+		panic(fmt.Errorf("unknown script %q", scriptName))
+	}
+
+	// Finally run the script
+	cmd := exec.Command(originalCommand, args...)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd.Run()
+}
+
 func main() {
 	log.SetFlags(0)
 
@@ -421,6 +487,38 @@ The list can be filtered using the "pattern" argument which is a regex.`,
 		},
 	}
 
+	runScriptCmd := &ffcli.Command{
+		Name:      "run-script",
+		Usage:     "run-script <cluster> <script name>",
+		ShortHelp: "run a kafka script on a cluster",
+		LongHelp: `Run a kafka script on a cluster.
+
+This is a wrapper to run things like kafka-topics.sh or kafka-consumer-groups.sh with the correct cluster information
+already provided.
+
+For example this:
+
+	$ kcm run-script staging kafka-topics.sh --describe
+
+Would be equivalent to running this:
+
+	$ kafka-topics.sh --zookeeper localhost:2181/staging --describe
+
+Or this:
+
+	$ kcm run-script staging kafka-consumer-groups.sh --list
+
+Would be equivalent to running this:
+
+    $ kafka-consumer-groups.sh --bootstrap-servers localhost:9092 --list`,
+		Exec: func(args []string) error {
+			if len(args) < 2 {
+				return fmt.Errorf("Usage: kcm run-script <cluster> <script name>")
+			}
+			return runScript(args)
+		},
+	}
+
 	versionCmd := &ffcli.Command{
 		Name:      "version",
 		Usage:     "version",
@@ -438,6 +536,7 @@ The list can be filtered using the "pattern" argument which is a regex.`,
 		Subcommands: []*ffcli.Command{
 			createCmd, listCmd, statusCmd,
 			startCmd, stopCmd, logsCmd,
+			runScriptCmd,
 			versionCmd,
 		},
 		Exec: func([]string) error {
