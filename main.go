@@ -340,16 +340,21 @@ func runScript(args []string) error {
 
 	// The script is not in the path, it needs to be absolute.
 	kafkaPath := makeKafkaExtractedPath(cluster.Version)
+
+	// We allow a user to use either the full name with the .sh extension like kafka-topics.sh
+	// or the name without the extension.
 	originalCommand := filepath.Join(kafkaPath, "bin", args[0])
+	scriptName := args[0]
+	if !strings.HasSuffix(scriptName, ".sh") {
+		scriptName += ".sh"
+		originalCommand += ".sh"
+	}
 
-	// Allow a user to just use the script name, without the extension.
-	scriptName := args[0][:len(args[0])-len(filepath.Ext(args[0]))]
-
-	// Kafka has scripts with two main ways of providing the connection parameters for the cluster
-	// * the --zookeeper flag with the zookeeper node address and prefix
-	// * the --bootstrap-server flag with a list of brokers addresses
+	// Kafka has scripts with two main ways of providing the connection parameters for the cluster:
+	// * the zookeeper node address and prefix
+	// * a list of broker addresses
 	//
-	// We keep a mapping of what script needs what so that run-script stays easy to use.
+	// We keep a mapping of what script needs what so we know how to call a particular script.
 
 	switch requirement := kafkaScriptsRequirements[scriptName]; requirement.connect {
 	case kafkaScriptZookeeper:
