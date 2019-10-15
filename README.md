@@ -277,9 +277,30 @@ $ kcm logs --follow --zk
 2019-10-14 00:20:59,143 [myid:] - INFO  [SyncThread:0:FileTxnLog@216] - Creating new log file: log.1
 ```
 
+### Run script
+
+Run a Kafka script on a cluster.
+
+This commands makes it easy to run scripts like `kafka-topics.sh` or `kafka-configs.sh` without having to provide the `--zookeeper` or `--bootstrap-server` flags manually.
+
+For example to create a topic on the cluster `prod`:
+
+```
+$ kcm run-script prod kafka-topics --create --topic user-login --partitions 8 --replication-factor 1
+Created topic user-login.
+```
+
+Or to consumer a topic:
+
+```
+$ kcm run-script prod kafka-console-consumer --topic user-login
+^CProcessed a total of 0 messages
+```
+
+**Note** that not every script are supported, if something's missing you can still use the script manually by using the broker information from `kcm list`.
+
 ## TODO
 
 * `remove` command
 * `complete` command and completion scripts for fish (and maybe bash/zsh if I care to do it)
-* wrapper command to call the Kafka scripts like `kafka-topics.sh` without having to provide the correct zookeeper address.
 * ??
