@@ -332,6 +332,5 @@ $ kcm run-script prod kafka-console-consumer --topic user-login
 
 ## TODO
 
-* `remove` command
 * `complete` command and completion scripts for fish (and maybe bash/zsh if I care to do it)
 * ??
