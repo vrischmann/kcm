@@ -269,6 +269,12 @@ func stopBroker(ctx context.Context, cluster Cluster, broker Broker) error {
 	return nil
 }
 
+func removeBrokerData(cluster Cluster, broker Broker) error {
+	dir := makeBrokerDir(cluster.Name, broker.ID)
+	log.Printf("removing data dir %s", dir)
+	return os.RemoveAll(dir)
+}
+
 func stopCluster(ctx context.Context, cluster Cluster) error {
 	for _, broker := range cluster.Brokers {
 		if err := stopBroker(ctx, cluster, broker); err != nil {

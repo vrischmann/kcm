@@ -109,6 +109,47 @@ func runCreateCluster(name ClusterName, version string) error {
 	return nil
 }
 
+func runRemoveCluster(name ClusterName) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	//
+
+	cluster, err := getCluster(ctx, name)
+	if err != nil {
+		return err
+	}
+	if cluster == nil {
+		log.Printf("cluster %q doesn't exist", name)
+		return nil
+	}
+
+	//
+
+	log.Printf("removing cluster %q", cluster.Name)
+
+	for _, broker := range cluster.Brokers {
+		log.Printf("stopping broker %d", broker.ID)
+		if err := stopBroker(ctx, *cluster, broker); err != nil {
+			return err
+		}
+		log.Printf("broker %d stopped", broker.ID)
+
+		log.Printf("removing broker %d data", broker.ID)
+		if err := removeBrokerData(*cluster, broker); err != nil {
+			return err
+		}
+		log.Printf("broker %d data removed", broker.ID)
+	}
+	if err := removeCluster(ctx, *cluster); err != nil {
+		return err
+	}
+
+	log.Printf("removed cluster %q", cluster.Name)
+
+	return nil
+}
+
 func runListClusters(pattern string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -422,6 +463,18 @@ func main() {
 		},
 	}
 
+	removeCmd := &ffcli.Command{
+		Name:      "remove",
+		Usage:     "remove <name>",
+		ShortHelp: "remove a Kafka cluster",
+		Exec: func(args []string) error {
+			if len(args) < 1 {
+				return fmt.Errorf("Usage: kcm remove <name>")
+			}
+			return runRemoveCluster(ClusterName(args[0]))
+		},
+	}
+
 	listCmd := &ffcli.Command{
 		Name:      "list",
 		Usage:     "list [pattern]",
@@ -534,7 +587,7 @@ Would be equivalent to running this:
 		FlagSet:   globalFlags,
 		ShortHelp: "manage Kafka clusters for local development and testing",
 		Subcommands: []*ffcli.Command{
-			createCmd, listCmd, statusCmd,
+			createCmd, removeCmd, listCmd, statusCmd,
 			startCmd, stopCmd, logsCmd,
 			runScriptCmd,
 			versionCmd,

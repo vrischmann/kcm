@@ -139,6 +139,26 @@ func createCluster(ctx context.Context, cluster Cluster) (err error) {
 	return
 }
 
+func removeCluster(ctx context.Context, cluster Cluster) (err error) {
+	conn := pool.Get(ctx)
+	defer pool.Put(conn)
+
+	defer sqlitex.Save(conn)(&err)
+
+	stmt := conn.Prep(`DELETE FROM broker WHERE cluster_id = $cluster_id`)
+	stmt.SetInt64("$cluster_id", int64(cluster.ID))
+
+	if _, err = stmt.Step(); err != nil {
+		return err
+	}
+
+	stmt = conn.Prep(`DELETE FROM cluster WHERE id = $id`)
+	stmt.SetInt64("$id", int64(cluster.ID))
+
+	_, err = stmt.Step()
+	return err
+}
+
 func getFirstClusterFromStmt(stmt *sqlite.Stmt) (*Cluster, error) {
 	clusters, err := getClustersFromStmt(stmt)
 	if err != nil {
