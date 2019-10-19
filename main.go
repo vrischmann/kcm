@@ -416,7 +416,7 @@ func main() {
 		ShortHelp: "create a Kafka cluster with a unique name using the specified version",
 		Exec: func(args []string) error {
 			if len(args) < 2 {
-				return fmt.Errorf("Usage: kcm <name> <version>")
+				return fmt.Errorf("Usage: kcm create <name> <version>")
 			}
 			return runCreateCluster(ClusterName(args[0]), args[1])
 		},
