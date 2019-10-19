@@ -98,6 +98,23 @@ Cluster #3 "oldprod"
 
 The name you chose must be unique. All Kafka versions available from the [Kafka website](http://kafka.apache.org/) should work but I haven't tested everything.
 
+### Removing a cluster
+
+You can remove a cluster by providing the name:
+
+```
+$ kcm remove prod
+removing cluster "prod"
+stopping broker 1
+broker 1 stopped
+removing broker 1 data
+removing data dir /home/vincent/.kcm/prod/broker1
+broker 1 data removed
+removed cluster "prod"
+```
+
+If the cluster is started it will also stop the brokers.
+
 ### List
 
 List all existing clusters and their brokers:
