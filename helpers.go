@@ -307,3 +307,10 @@ func tailFiles(follow bool, files ...string) error {
 
 	return cmd.Run()
 }
+
+func getJavaBinary() string {
+	if *globalJavaHome != "" {
+		return *globalJavaHome + "/bin/java"
+	}
+	return "java"
+}

@@ -207,17 +207,10 @@ func startBroker(ctx context.Context, cluster Cluster, broker Broker) error {
 		return err
 	}
 
-	var javaBinary string
-	if *globalJavaHome != "" {
-		javaBinary = *globalJavaHome + "/bin/java"
-	} else {
-		javaBinary = "java"
-	}
-
 	// 6. finally run the command. This doesn't block.
 
 	bg, err := runBackgroundCommand(ctx, extractedPath,
-		javaBinary, "-cp", cp,
+		getJavaBinary(), "-cp", cp,
 		"-Dlog4j.configuration=file:"+log4jConfig,
 		"kafka.Kafka", config,
 	)
