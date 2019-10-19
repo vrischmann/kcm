@@ -275,6 +275,9 @@ func initializeDatabase(pool *sqlitex.Pool) error {
 	if err := sqlitex.ExecTransient(conn, "PRAGMA journal_mode=WAL;", nil); err != nil {
 		return err
 	}
+	if err := sqlitex.ExecTransient(conn, "PRAGMA foreign_keys=ON;", nil); err != nil {
+		return err
+	}
 	if err := sqlitex.ExecScript(conn, schema); err != nil {
 		return err
 	}
@@ -314,7 +317,7 @@ CREATE TABLE IF NOT EXISTS broker (
 	cluster_id integer NOT NULL,
 	addr text NOT NULL,
 	PRIMARY KEY (id, cluster_id),
-	FOREIGN KEY (cluster_id) REFERENCES cluster(id)
+	FOREIGN KEY (cluster_id) REFERENCES cluster(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS broker_status (
@@ -322,8 +325,7 @@ CREATE TABLE IF NOT EXISTS broker_status (
 	cluster_id integer NOT NULL,
 	broker_id integer NOT NULL,
 	PRIMARY KEY (process_id),
-	FOREIGN KEY (cluster_id) REFERENCES cluster(id),
-	FOREIGN KEY (broker_id) REFERENCES broker(id)
+	FOREIGN KEY (broker_id, cluster_id) REFERENCES broker(id, cluster_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS current_context (
