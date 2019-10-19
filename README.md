@@ -36,13 +36,15 @@ USAGE
   kcm <subcommand> [flag] [args...]
 
 SUBCOMMANDS
-  create   create a Kafka cluster with a unique name using the specified version
-  list     list the existing Kafka clusters
-  status   print the status of the current kafka cluster, if any
-  start    start a cluster
-  stop     stop a cluster (or all)
-  logs     print the logs for a cluster (or all)
-  version  print the version information (necessary to report bugs)
+  create      create a Kafka cluster with a unique name using the specified version
+  remove      remove a Kafka cluster
+  list        list the existing Kafka clusters
+  status      print the status of the current kafka cluster, if any
+  start       start a cluster
+  stop        stop a cluster (or all)
+  logs        print the logs for a cluster (or all)
+  run-script  run a kafka script on a cluster
+  version     print the version information (necessary to report bugs)
 
 FLAGS
   -java-home ...           Use this Java distribution instead of the default one
@@ -51,11 +53,23 @@ FLAGS
 
 **Important note** all flags must come before any positional arguments in these commands.
 
+### Note about Java
+
+By default `kcm` uses any `java` command accessible in the path `/usr/bin:/bin`.
+
+If you want to use a specific java version, for example to run Kafka 0.9 which requires Java 8, you can use the flag `--java-home`:
+
+```
+$ kcm --java-home /opt/jdk8 start staging
+launched zookeeper
+launched cluster "staging"
+```
+
 ### Note about Zookeeper
 
 `kcm` manages a single Zookeeper node used by all clusters. To avoid configuration conflicts, each cluster is configured with a Zookeeper prefix (so for example a cluster named `prod` will use the prefix `prod`).
 
-This is important to remember if you interact with the Zookeeper node (for example to create topics).
+This is important to remember if you interact with the Zookeeper node directly (without using `run-script` described below).
 
 ### Creating a cluster
 
