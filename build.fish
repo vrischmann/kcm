@@ -8,4 +8,10 @@ end
 set -l _version $argv[1]
 set -l _commit (git rev-parse --verify HEAD)
 
-go build -ldflags "-X main.gVersion=$_version -X main.gCommit=$_commit"
+podman build \
+  -t kcm_build \
+  --build-arg version=$_version \
+  --build-arg commit=$_commit .
+
+set -l _container_name (podman create kcm_build /bin/true)
+podman cp $_container_name:/kcm ./kcm
