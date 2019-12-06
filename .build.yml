@@ -1,0 +1,20 @@
+image: debian/buster
+packages:
+  - build-essential
+sources:
+  - https://git.sr.ht/~vrischmann/kcm
+
+tasks:
+  - setup: |
+      cd kcm
+      go mod download
+      go mod verify
+
+  - build: |
+      cd kcm
+      go build -v
+
+triggers:
+  - action: email
+    condition: always
+    to: "Vincent Rischmann <vincent@rischmann.fr>"
