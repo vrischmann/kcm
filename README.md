@@ -6,21 +6,20 @@ The goal is to make it easy to run Kafka clusters for development and testing.
 
 ## Platforms supported
 
-Only Linux and macOS are supported and tested against. It may compile correctly on other platforms but it's possible some things
-will not work.
+Only Linux is supported and tested against. It may compile correctly on other platforms but it's possible some things will not work.
 
 ## Installation
 
 Head over to the [releases page](https://github.com/vrischmann/kcm/releases).
 
-Binaries are built for Linux and macOS.
+Binaries are built for Linux only.
 
 ## Building
 
 ### Prerequisites
 
 * [Go 1.13](https://golang.org/)
-* A C compiler toolchain (`build-essential` on Debian/Ubuntu, `@development-tools` on Fedora, `Xcode` on macOS, etc)
+* A C compiler toolchain (`build-essential` on Debian/Ubuntu, `@development-tools` on Fedora, etc)
 
 ### Procedure
 
