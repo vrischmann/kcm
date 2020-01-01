@@ -4,21 +4,30 @@ packages:
   - curl
 sources:
   - https://git.sr.ht/~vrischmann/kcm
+  - https://git.sr.ht/~sircmpwn/annotatego
+secrets:
+  - 899cb5e8-734f-414d-8d9b-a1af5dbf9838
 
 tasks:
   - install_golang: |
       curl -L -O https://dl.google.com/go/go1.13.5.linux-amd64.tar.gz
       sudo tar -C /usr/local -xzf go1.13.5.linux-amd64.tar.gz
       echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.buildenv
-
   - setup: |
       cd kcm
       go mod download
       go mod verify
-
   - build: |
       cd kcm
       go build -v
+
+  - install_annotatego: |
+      cd annotatego
+      go build -v
+  - annotate: |
+      cd kcm
+      ~/annotatego/annotatego -v go.rischmann.fr/kcm... > annotations.json
+      ~/upload-annotations annotations.json vrischmann kcm
 
 triggers:
   - action: email
