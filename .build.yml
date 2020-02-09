@@ -31,5 +31,5 @@ tasks:
 
 triggers:
   - action: email
-    condition: always
+    condition: failure
     to: "Vincent Rischmann <vincent@rischmann.fr>"
