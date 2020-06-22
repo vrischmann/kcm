@@ -10,7 +10,7 @@ import (
 	"text/template"
 )
 
-const zookeeperVersion = "3.5.5"
+const zookeeperVersion = "3.6.1"
 
 func makeZookeeperExtractedPath(version string) string {
 	return filepath.Join(dataDir, "zookeeper_"+version)
