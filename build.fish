@@ -8,8 +8,11 @@ end
 set -l _version $argv[1]
 set -l _commit (git rev-parse --verify HEAD)
 
+printf "Building version %s, commit %s\n" $_version $_commit
+
 podman build \
   -t kcm_build \
+  --no-cache \
   --build-arg version=$_version \
   --build-arg commit=$_commit .
 
