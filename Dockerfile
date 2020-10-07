@@ -1,12 +1,9 @@
+FROM golang:1.15
+
 ARG version
 ARG commit
 
-FROM golang:1.15
-
 WORKDIR /app
-
-ENV version $version
-ENV commit $commit
 
 COPY go.mod .
 COPY go.sum .
