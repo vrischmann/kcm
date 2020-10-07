@@ -210,7 +210,7 @@ func startBroker(ctx context.Context, cluster Cluster, broker Broker) error {
 	// 6. finally run the command. This doesn't block.
 
 	bg, err := runBackgroundCommand(ctx, extractedPath,
-		getJavaBinary(), "-cp", cp,
+		getJavaBinary(), "-Xmx512m", "-cp", cp,
 		"-Dlog4j.configuration=file:"+log4jConfig,
 		"kafka.Kafka", config,
 	)

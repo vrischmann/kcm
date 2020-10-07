@@ -188,7 +188,7 @@ func startZookeeper(ctx context.Context) error {
 	// 6. finally run the command. This doesn't block.
 
 	bg, err := runBackgroundCommand(ctx, extractedPath,
-		getJavaBinary(), "-cp", cp,
+		getJavaBinary(), "-Xmx128m", "-cp", cp,
 		fmt.Sprintf("-Dlog4j.configuration=file://%s/conf/log4j.properties", extractedPath),
 		"org.apache.zookeeper.server.quorum.QuorumPeerMain",
 		filepath.Join(extractedPath, "conf/zoo.cfg"),
